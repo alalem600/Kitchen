@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Personal Chef - Detailed Flow with AI Branches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffd6e7, #ffb6c1);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #d63384;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            color: #a61e4d;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .screen-card {
+            width: 350px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(214, 51, 132, 0.2);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+            margin: 20px 0;
+            z-index: 10;
+        }
+
+            .screen-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(214, 51, 132, 0.3);
+            }
+
+        .screen-header {
+            background: linear-gradient(to right, #ff4d94, #ff80ab);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+        }
+
+            .screen-header::before {
+                content: '';
+                position: absolute;
+                top: 8px;
+                right: 50%;
+                transform: translateX(50%);
+                width: 80px;
+                height: 4px;
+                background: rgba(255,255,255,0.5);
+                border-radius: 10px;
+            }
+
+        .screen-content {
+            padding: 20px;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            margin: 0 4px;
+        }
+
+            .step-dot.active {
+                background: #ff4d94;
+            }
+
+        h2 {
+            color: #d63384;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 1.4rem;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: border 0.3s;
+            text-align: right;
+        }
+
+            input:focus, select:focus {
+                border-color: #ff80ab;
+                outline: none;
+            }
+
+        .btn {
+            background: linear-gradient(to right, #ff4d94, #ff80ab);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 10px rgba(255, 77, 148, 0.3);
+            }
+
+        .btn-outline {
+            background: white;
+            color: #ff4d94;
+            border: 1px solid #ff4d94;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 12px 0;
+            color: #999;
+            font-size: 0.8rem;
+        }
+
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .social-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f5f5;
+            color: #555;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .social-btn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            }
+
+        .terms {
+            font-size: 0.7rem;
+            color: #999;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+            .terms a {
+                color: #ff4d94;
+                text-decoration: none;
+            }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+            .checkbox-group input {
+                width: auto;
+                margin-left: 8px;
+            }
+
+        .option-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .option-card:hover {
+                border-color: #ff80ab;
+                background: #fff5f8;
+            }
+
+            .option-card.selected {
+                border-color: #ff4d94;
+                background: #fff0f5;
+            }
+
+        .ingredient-list {
+            max-height: 120px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 12px;
+        }
+
+        .ingredient-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+            .ingredient-item:last-child {
+                border-bottom: none;
+            }
+
+        .nav-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .nav-btn {
+            background: #f0f0f0;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .nav-btn:hover {
+                background: #e0e0e0;
+            }
+
+            .nav-btn.primary {
+                background: linear-gradient(to right, #ff4d94, #ff80ab);
+                color: white;
+            }
+
+        .success-screen {
+            text-align: center;
+            padding: 15px 0;
+        }
+
+        .success-icon {
+            font-size: 3rem;
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+
+        .flow-line {
+            position: relative;
+            height: 50px;
+            width: 3px;
+            background: linear-gradient(to bottom, #ff4d94, #ff80ab);
+            margin: 0 auto;
+        }
+
+            .flow-line::after {
+                content: '';
+                position: absolute;
+                bottom: -5px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 0;
+                height: 0;
+                border-top: 10px solid #ff4d94;
+                border-left: 10px solid transparent;
+                border-right: 10px solid transparent;
+            }
+
+            .flow-line.dashed {
+                background: repeating-linear-gradient( to bottom, #ff80ab, #ff80ab 5px, transparent 5px, transparent 10px );
+            }
+
+                .flow-line.dashed::after {
+                    display: none;
+                }
+
+        .flow-branch {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+            margin: 10px 0;
+            width: 100%;
+        }
+
+        .branch-line {
+            width: 150px;
+            height: 3px;
+            background: linear-gradient(to right, #ff4d94, #ff80ab);
+            position: relative;
+            margin: 0 10px;
+        }
+
+            .branch-line::before {
+                content: '';
+                position: absolute;
+                top: -5px;
+                left: 0;
+                width: 0;
+                height: 0;
+                border-right: 10px solid #ff4d94;
+                border-top: 10px solid transparent;
+                border-bottom: 10px solid transparent;
+            }
+
+        .branch-screen {
+            width: 250px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(214, 51, 132, 0.2);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+
+            .branch-screen:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 25px rgba(214, 51, 132, 0.3);
+            }
+
+        .branch-header {
+            background: linear-gradient(to right, #ff80ab, #ffb6c1);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .branch-content {
+            padding: 15px;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+            .branch-content p {
+                text-align: center;
+                font-size: 0.9rem;
+                margin-bottom: 10px;
+            }
+
+        .branch-btn {
+            background: linear-gradient(to right, #ff80ab, #ffb6c1);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.3s;
+        }
+
+            .branch-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 10px rgba(255, 128, 171, 0.3);
+            }
+
+        .flow-annotation {
+            position: absolute;
+            left: -180px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            width: 160px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #d63384;
+            font-weight: 500;
+        }
+
+            .flow-annotation.right {
+                left: auto;
+                right: -180px;
+            }
+
+                .flow-annotation.right::after {
+                    right: auto;
+                    left: -10px;
+                    border-left: none;
+                    border-right: 10px solid rgba(255, 255, 255, 0.9);
+                }
+
+        .ai-assistant-card {
+            width: 400px;
+            background: linear-gradient(to bottom right, #e3f2fd, #bbdefb);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(33, 150, 243, 0.3);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+            margin: 20px 0;
+            z-index: 10;
+            border: 2px solid #90caf9;
+        }
+
+            .ai-assistant-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(33, 150, 243, 0.4);
+            }
+
+        .ai-header {
+            background: linear-gradient(to right, #42a5f5, #2196f3);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+        }
+
+            .ai-header::before {
+                content: '';
+                position: absolute;
+                top: 8px;
+                right: 50%;
+                transform: translateX(50%);
+                width: 80px;
+                height: 4px;
+                background: rgba(255,255,255,0.5);
+                border-radius: 10px;
+            }
+
+        .ai-content {
+            padding: 20px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ai-analysis {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .analysis-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+        }
+
+        .analysis-label {
+            font-weight: 500;
+            color: #1565c0;
+        }
+
+        .analysis-value {
+            color: #d63384;
+        }
+
+        .ai-recommendation {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            border-right: 4px solid #2196f3;
+        }
+
+            .ai-recommendation h3 {
+                color: #1565c0;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+
+        .recommendation-list {
+            list-style-type: none;
+        }
+
+            .recommendation-list li {
+                padding: 5px 0;
+                border-bottom: 1px dashed #e0e0e0;
+            }
+
+                .recommendation-list li:last-child {
+                    border-bottom: none;
+                }
+
+        .ai-icon {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .decision-node {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(to right, #4CAF50, #66BB6A);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin: 20px auto;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+            z-index: 5;
+        }
+
+            .decision-node span {
+                text-align: center;
+                font-size: 0.9rem;
+            }
+
+        .complex-branch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .branch-row {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .condition-branch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 20px;
+        }
+
+        .condition-card {
+            width: 280px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(214, 51, 132, 0.2);
+            overflow: hidden;
+            position: relative;
+            margin: 10px 0;
+        }
+
+        .condition-header {
+            background: linear-gradient(to right, #ffb74d, #ffcc80);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .condition-content {
+            padding: 15px;
+        }
+
+            .condition-content p {
+                text-align: center;
+                font-size: 0.9rem;
+                margin-bottom: 10px;
+            }
+
+        .condition-result {
+            background: #e8f5e9;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            border-right: 3px solid #4CAF50;
+        }
+
+            .condition-result h4 {
+                color: #2e7d32;
+                margin-bottom: 5px;
+                text-align: center;
+            }
+
+        .condition-list {
+            list-style-type: none;
+            font-size: 0.8rem;
+        }
+
+            .condition-list li {
+                padding: 3px 0;
+            }
+
+        .vertical-line {
+            width: 3px;
+            height: 50px;
+            background: linear-gradient(to bottom, #ff4d94, #ff80ab);
+            margin: 0 auto;
+        }
+
+        .horizontal-line {
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, #ff4d94, #ff80ab);
+            margin: 0 10px;
+        }
+
+        .branch-connector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .flow-annotation {
+                display: none;
+            }
+
+            .flow-branch, .branch-row {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .branch-line, .horizontal-line {
+                width: 3px;
+                height: 30px;
+                margin: 10px 0;
+            }
+
+                .branch-line::before {
+                    top: 0;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    border-right: 10px solid transparent;
+                    border-left: 10px solid transparent;
+                    border-bottom: 10px solid #ff4d94;
+                }
+
+            .ai-assistant-card {
+                width: 320px;
+            }
+
+            .condition-card {
+                width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>مخطط انسيابي للمطبخ الذكي</h1>
+            <p class="subtitle">مقترح انسيابي يوضح تدفق البيانات للمشروع</p>
+        </header>
+
+        <div class="flow-container">
+            <!-- Screen 1: Welcome -->
+            <div class="screen-card">
+                <div class="screen-header">
+                    <h2>مرحباً بك</h2>
+                </div>
+                <div class="screen-content">
+                    <div class="step-indicator">
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                    </div>
+
+                    <div style="text-align: center; margin: 15px 0;">
+                        <i class="fas fa-utensils" style="font-size: 2.5rem; color: #ff4d94;"></i>
+                    </div>
+
+                    <h2>مساعد الطبخ الشخصي الذكي</h2>
+                    <p style="text-align: center; margin-bottom: 15px; font-size: 0.9rem;">سنساعدك في إعداد وجبات صحية ولذيذة تناسب حالتك الصحية وأهدافك</p>
+
+                    <button class="btn">ابدأ الرحلة</button>
+
+                    <div class="divider">أو سجل باستخدام</div>
+
+                    <div class="social-buttons">
+                        <button class="social-btn"><i class="fab fa-google"></i></button>
+                        <button class="social-btn"><i class="fab fa-facebook-f"></i></button>
+                        <button class="social-btn"><i class="fab fa-apple"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-line"></div>
+
+            <!-- Screen 2: Account Creation -->
+            <div class="screen-card">
+                <div class="screen-header">
+                    <h2>إنشاء حساب</h2>
+                </div>
+                <div class="screen-content">
+                    <div class="step-indicator">
+                        <div class="step-dot"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name">الاسم الكامل</label>
+                        <input type="text" id="name" placeholder="أدخل اسمك">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">البريد الإلكتروني</label>
+                        <input type="email" id="email" placeholder="أدخل بريدك الإلكتروني">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">كلمة المرور</label>
+                        <input type="password" id="password" placeholder="أنشئ كلمة مرور">
+                    </div>
+
+                    <button class="btn">إنشاء حساب</button>
+
+                    <p class="terms">بإنشاء حساب، فإنك توافق على <a href="#">شروط الخدمة</a> و <a href="#">سياسة الخصوصية</a></p>
+                </div>
+            </div>
+            <div class="flow-line dashed"></div>
+
+            <!-- Branch: Admin Approval Workflow -->
+            <div class="flow-branch">
+                <!-- Pending Approval Screen -->
+                <div class="branch-screen">
+                    <div class="branch-header">
+                        <h3>انتظار الموافقة</h3>
+                    </div>
+                    <div class="branch-content">
+                        <p>تم إرسال طلب إنشاء الحساب. في انتظار موافقة المسؤول.</p>
+                        <i class="fas fa-hourglass-half fa-2x"></i>
+                    </div>
+                </div>
+
+                <div class="branch-line"></div>
+
+                <!-- Account Approved Screen -->
+                <div class="branch-screen">
+                    <div class="branch-header">
+                        <h3>تمت الموافقة على الحساب</h3>
+                    </div>
+                    <div class="branch-content">
+                        <p>تمت الموافقة على حسابك من قبل المسؤول. يمكنك الآن تسجيل الدخول.</p>
+                        <button class="branch-btn">تسجيل الدخول</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="flow-line"></div>
+
+            <!-- Screen 3: Health Profile -->
+            <div class="screen-card">
+                <div class="screen-header">
+                    <h2>الملف الصحي</h2>
+                </div>
+                <div class="screen-content">
+                    <div class="step-indicator">
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">العمر</label>
+                        <input type="number" id="age" placeholder="أدخل عمرك">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="weight">الوزن (كجم)</label>
+                        <input type="number" id="weight" placeholder="أدخل وزنك">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="height">الطول (سم)</label>
+                        <input type="number" id="height" placeholder="أدخل طولك">
+                    </div>
+
+                    <div class="nav-controls">
+                        <button class="nav-btn">رجوع</button>
+                        <button class="nav-btn primary">التالي</button>
+                    </div>
+                </div>
+            </div>
+            <div class="flow-branch">
+                <!-- AI Health Evaluation Screen -->
+                <div class="branch-screen">
+                    <div class="branch-header">
+                        <h3>تقييم الملف الصحي</h3>
+                    </div>
+                    <div class="branch-content">
+                        <p>شكرًا لإكمال ملفك الصحي. المساعد الذكي سيقوم بتقييم حالاتك وأهدافك لكي يوجهك بشكل شخصي.</p>
+                        <i class="fas fa-user-md fa-2x"></i>
+                    </div>
+                </div>
+
+                <div class="branch-line"></div>
+
+                <!-- Personalized Recommendations Screen -->
+                <div class="branch-screen">
+                    <div class="branch-header">
+                        <h3>استعد للتوصيات الشخصية</h3>
+                    </div>
+                    <div class="branch-content">
+                        <p>بناءً على ملفك الصحي، سيقترح المساعد الذكي وجبات وخطط تناسبك.</p>
+                        <button class="branch-btn primary">ابدأ التوصيات</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-line"></div>
+
+            <!-- Screen 4: Health Conditions -->
+            <div class="screen-card">
+                <div class="screen-header">
+                    <h2>الحالات الصحية</h2>
+                </div>
+                <div class="screen-content">
+                    <div class="step-indicator">
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                    </div>
+
+                    <p style="margin-bottom: 10px;">اختر الحالات الصحية التي تنطبق عليك:</p>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="diabetes">
+                        <label for="diabetes">سكري</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="pressure">
+                        <label for="pressure">ضغط الدم</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="kidney">
+                        <label for="kidney">أمراض الكلى</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="cholesterol">
+                        <label for="cholesterol">كوليسترول</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="allergies">الحساسيات (اختياري)</label>
+                        <input type="text" id="allergies" placeholder="اذكر الحساسيات الغذائية">
+                    </div>
+
+                    <div class="nav-controls">
+                        <button class="nav-btn">رجوع</button>
+                        <button class="nav-btn primary">التالي</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-line"></div>
+
+            <!-- AI Decision Node -->
+            <div class="decision-node">
+                <span>محلل الذكاء الاصطناعي</span>
+            </div>
+
+            <div class="flow-line"></div>
+
+            <!-- Complex AI Branching -->
+            <div class="complex-branch">
+                <div class="branch-row">
+                    <div class="condition-branch">
+                        <div class="condition-card">
+                            <div class="condition-header">
+                                <h3>الحالة: عمر فوق ٥٠ + سكري</h3>
+                            </div>
+                            <div class="condition-content">
+                                <p>المستخدم أكبر من ٥٠ عاماً ومصاب بمرض السكري</p>
+                                <div class="condition-result">
+                                    <h4>التوصيات:</h4>
+                                    <ul class="condition-list">
+                                        <li>وجبات منخفضة الكربوهيدرات</li>
+                                        <li>تجنب السكريات المضافة</li>
+                                        <li>تركيز على الألياف والبروتين</li>
+                                        <li>متابعة مستوى السكر في الدم</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="horizontal-line"></div>
+
+                    <div class="condition-branch">
+                        <div class="condition-card">
+                            <div class="condition-header">
+                                <h3>الحالة: ضغط الدم المرتفع</h3>
+                            </div>
+                            <div class="condition-content">
+                                <p>المستخدم يعاني من ارتفاع ضغط الدم</p>
+                                <div class="condition-result">
+                                    <h4>التوصيات:</h4>
+                                    <ul class="condition-list">
+                                        <li>تقليل الصوديوم في الوجبات</li>
+                                        <li>زيادة البوتاسيوم والمغنيسيوم</li>
+                                        <li>تجنب الأطعمة المالحة</li>
+                                        <li>تركيز على الخضروات الورقية</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vertical-line"></div>
+
+                <div class="branch-row">
+                    <div class="condition-branch">
+                        <div class="condition-card">
+                            <div class="condition-header">
+                                <h3>الحالة: أمراض الكلى</h3>
+                            </div>
+                            <div class="condition-content">
+                                <p>المستخدم يعاني من مشاكل في الكلى</p>
+                                <div class="condition-result">
+                                    <h4>التوصيات:</h4>
+                                    <ul class="condition-list">
+                                        <li>تقليل البروتين والصوديوم</li>
+                                        <li>مراقبة البوتاسيوم والفوسفور</li>
+                                        <li>تجنب الأطعمة المصنعة</li>
+                                        <li>شرب كميات مناسبة من الماء</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="horizontal-line"></div>
+
+                    <div class="condition-branch">
+                        <div class="condition-card">
+                            <div class="condition-header">
+                                <h3>الحالة: لا توجد أمراض</h3>
+                            </div>
+                            <div class="condition-content">
+                                <p>المستخدم لا يعاني من أمراض مزمنة</p>
+                                <div class="condition-result">
+                                    <h4>التوصيات:</h4>
+                                    <ul class="condition-list">
+                                        <li>نظام غذائي متوازن</li>
+                                        <li>تركيز على الوقاية</li>
+                                        <li>مزيج من جميع المجموعات الغذائية</li>
+                                        <li>تمارين منتظمة ونمط حياة صحي</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-line"></div>
+
+            <!-- AI Assistant Processing -->
+            <div class="ai-assistant-card">
+                <div class="ai-header">
+                    <i class="ai-icon fas fa-robot"></i>
+                    <h2>المساعد الذكي - التوصيات المخصصة</h2>
+                </div>
+                <div class="ai-content">
+                    <div class="ai-analysis">
+                        <div class="analysis-item">
+                            <span class="analysis-label">الحالة المحددة:</span>
+                            <span class="analysis-value">عمر فوق ٥٠ + سكري</span>
+                        </div>
+                        <div class="analysis-item">
+                            <span class="analysis-label">التوصيات:</span>
+                            <span class="analysis-value">وجبات منخفضة الكربوهيدرات</span>
+                        </div>
+                    </div>
+
+                    <div class="ai-recommendation">
+                        <h3>الوجبات المقترحة</h3>
+                        <ul class="recommendation-list">
+                            <li>شوربة العدس مع الخضار</li>
+                            <li>سلطة السبانخ والجوز</li>
+                            <li>سمك مشوي مع بروكلي</li>
+                            <li>دجاج بالفرن مع خضار مشكلة</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-line"></div>
+
+            <!-- Branch: Kitchen Inventory Options -->
+            <div class="flow-branch">
+                <div class="branch-screen">
+                    <div class="branch-header">
+                        <h3>إدخال مخزون المطبخ</h3>
+                    </div>
+                    <div class="branch-content">
+                        <p>أدخل المكونات المتوفرة في مطبخك لإنشاء وصفات مخصصة</p>
+                        <button class="branch-btn">ابدأ بالإدخال</button>
+                    </div>
+                </div>
+
+                <div class="branch-line"></div>
+
+                <div class="branch-screen">
+                    <div class="branch-header">
+                        <h3>تخطي لاحقاً</h3>
+                    </div>
+                    <div class="branch-content">
+                        <p>يمكنك تخطي هذه الخطوة الآن والعودة إليها لاحقاً</p>
+                        <button class="branch-btn">تخطي الآن</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-line dashed"></div>
+
+            <!-- Screen 5: Kitchen Inventory -->
+            <div class="screen-card">
+                <div class="screen-header">
+                    <h2>مخزون المطبخ</h2>
+                </div>
+                <div class="screen-content">
+                    <div class="step-indicator">
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                    </div>
+
+                    <p style="margin-bottom: 10px;">أدخل المكونات المتوفرة في مطبخك:</p>
+
+                    <div class="form-group">
+                        <input type="text" placeholder="أضف مكون (مثل: أرز، دجاج، طماطم)">
+                    </div>
+
+                    <button class="btn btn-outline" style="width: auto; margin: 0 auto;">إضافة مكون</button>
+
+                    <div class="ingredient-list">
+                        <div class="ingredient-item">
+                            <span>أرز</span>
+                            <i class="fas fa-times" style="color: #ff4d94; cursor: pointer;"></i>
+                        </div>
+                        <div class="ingredient-item">
+                            <span>دجاج</span>
+                            <i class="fas fa-times" style="color: #ff4d94; cursor: pointer;"></i>
+                        </div>
+                        <div class="ingredient-item">
+                            <span>طماطم</span>
+                            <i class="fas fa-times" style="color: #ff4d94; cursor: pointer;"></i>
+                        </div>
+                        <div class="ingredient-item">
+                            <span>بصل</span>
+                            <i class="fas fa-times" style="color: #ff4d94; cursor: pointer;"></i>
+                        </div>
+                    </div>
+
+                    <div class="nav-controls">
+                        <button class="nav-btn">رجوع</button>
+                        <button class="nav-btn primary">التالي</button>
+                    </div>
+                </div>
+            </div>            <div class="flow-line"></div>
+
+            <!-- Screen: اختر وجبتك -->
+            <div class="screen-card">
+                <div class="screen-header">
+                    <h2>اختر وجبتك</h2>
+                </div>
+                <div class="screen-content">
+                    <div class="step-indicator">
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                    </div>
+
+                    <p style="margin-bottom: 12px; font-size: 0.9rem; text-align: center;">
+                        اختر الوجبة التي تريدها بناءً على المكونات المتوفرة في مطبخك
+                    </p>
+
+                    <!-- Meal Options -->
+                    <div class="option-card selected">
+                        <label>شوربة العدس مع الخضار</label>
+                    </div>
+
+                    <div class="option-card">
+                        <label>سلطة السبانخ والجوز</label>
+                    </div>
+
+                    <div class="option-card">
+                        <label>سمك مشوي مع بروكلي</label>
+                    </div>
+
+                    <div class="option-card">
+                        <label>دجاج بالفرن مع خضار مشكلة</label>
+                    </div>
+
+                    <div class="option-card">
+                        <label>أرز بالخضار والدجاج</label>
+                    </div>
+
+                    <div class="option-card">
+                        <label>باستا بالخضار وصلصة الطماطم</label>
+                    </div>
+
+                    <div class="nav-controls">
+                        <button class="nav-btn">رجوع</button>
+                        <button class="nav-btn primary">التالي</button>
+                    </div>
+                </div>
+            </div>
+            <div class="flow-line"></div>
+
+            <div class="flow-line dashed"></div>
+
+            <!-- Branch: Meal Selection Options -->
+            <div class="flow-branch">
+                <div class="branch-screen">
+                    <div class="branch-header">
+                        <h3>اختر وجبتك</h3>
+                    </div>
+                    <div class="branch-content">
+                        <p>اختر الوجبة التي تريد إعدادها من القوائم المتاحة</p>
+                        <button class="branch-btn">عرض القوائم</button>
+                    </div>
+                </div>
+
+                <div class="branch-line"></div>
+
+                <div class="branch-screen">
+                    <div class="branch-header">
+                        <h3>اقتراحات الذكاء الاصطناعي</h3>
+                    </div>
+                    <div class="branch-content">
+                        <p>إذا لم تتوفر جميع المكونات، سيقترح الذكاء الاصطناعي وصفات مناسبة</p>
+                        <button class="branch-btn">عرض الاقتراحات</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="flow-line"></div>
+            <!-- Ready Menu Selection Screen -->
+            <div class="screen-card">
+                <div class="screen-header">
+                    <h2>اختر وجبتك الجاهزة</h2>
+                </div>
+                <div class="screen-content">
+                    <div class="step-indicator">
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot active"></div>
+                    </div>
+
+                    <p style="margin-bottom: 10px;">اختر من بين القوائم الجاهزة المتوفرة:</p>
+
+                    <div class="menu-card selected">
+                        <label>الوجبة 1</label>
+                    </div>
+
+                    <div class="menu-card">
+                        <label>الوجبة 2</label>
+                    </div>
+
+                    <div class="menu-card">
+                        <label>الوجبة 3</label>
+                    </div>
+
+                    <!-- Add more menus as needed -->
+
+                    <div class="nav-controls">
+                        <button class="nav-btn">رجوع</button>
+                        <button class="nav-btn primary">التالي</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Branch Flow for Ready Menu Selection -->
+            <div class="flow-branch">
+                <!-- Trial Menu Limit Screen -->
+                <div class="branch-screen">
+                    <div class="branch-header">
+                        <h3>فترة تجريبية</h3>
+                    </div>
+                    <div class="branch-content">
+                        <p>يمكنك تجربة حتى 10 قوائم جاهزة مجانًا.</p>
+                        <i class="fas fa-hourglass-half fa-2x"></i>
+                    </div>
+                </div>
+
+                <div class="branch-line"></div>
+
+                <!-- Subscription Required Screen -->
+                <div class="branch-screen">
+                    <div class="branch-header">
+                        <h3>اشتراك مطلوب</h3>
+                    </div>
+                    <div class="branch-content">
+                        <p>لقد تجاوزت الحد التجريبي. للاستمرار، يرجى الاشتراك ودفع الرصيد باستخدام: رصيد ليبيانا ، رصيد مدار أو طرق أخرى.</p>
+                        <button class="branch-btn primary">اشترك الآن</button>
+                    </div>
+                </div>
+            </div>
+            <div class="flow-line"></div>
+
+            <!-- Screen 6: Goals -->
+            <div class="screen-card">
+                <div class="screen-header">
+                    <h2>الأهداف</h2>
+                </div>
+                <div class="screen-content">
+                    <div class="step-indicator">
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                    </div>
+
+                    <p style="margin-bottom: 10px;">اختر هدفك الأساسي:</p>
+
+                    <div class="option-card selected">
+                        <label>فقدان الوزن</label>
+                    </div>
+
+                    <div class="option-card">
+                        <label>الحفاظ على الوزن</label>
+                    </div>
+
+                    <div class="option-card">
+                        <label>زيادة الوزن</label>
+                    </div>
+
+                    <div class="option-card">
+                        <label>بناء العضلات</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="activity">مستوى النشاط</label>
+                        <select id="activity">
+                            <option value="">اختر مستوى النشاط</option>
+                            <option value="low">قليل النشاط</option>
+                            <option value="moderate">نشاط معتدل</option>
+                            <option value="active">نشيط</option>
+                            <option value="very-active">نشيط جداً</option>
+                        </select>
+                    </div>
+
+                    <div class="nav-controls">
+                        <button class="nav-btn">رجوع</button>
+                        <button class="nav-btn primary">التالي</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-line"></div>
+
+            <div class="flow-branch">
+                <!-- Personalized Plan Screen -->
+                <div class="branch-screen">
+                    <div class="branch-header">
+                        <h3>خطة مخصصة</h3>
+                    </div>
+                    <div class="branch-content">
+                        <p>تم اختيار هدفك ومستوى النشاط. المساعد الذكي سيقوم بإعداد خطة وجبات ونصائح مناسبة لك.</p>
+                        <i class="fas fa-utensils fa-2x"></i>
+                    </div>
+                </div>
+
+                <div class="branch-line"></div>
+
+                <!-- Extra Guidance Screen -->
+                <div class="branch-screen">
+                    <div class="branch-header">
+                        <h3>توجيه إضافي</h3>
+                    </div>
+                    <div class="branch-content">
+                        <p>يمكنك الحصول على نصائح إضافية حول التمارين والوجبات لتحقيق هدفك بشكل أسرع.</p>
+                        <button class="branch-btn primary">ابدأ التوجيه</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Option card selection
+            const optionCards = document.querySelectorAll('.option-card');
+            optionCards.forEach(card => {
+                card.addEventListener('click', function () {
+                    // Remove selected class from all cards in the same container
+                    const parent = this.parentElement;
+                    const siblings = parent.querySelectorAll('.option-card');
+                    siblings.forEach(sibling => {
+                        sibling.classList.remove('selected');
+                    });
+
+                    // Add selected class to clicked card
+                    this.classList.add('selected');
+                });
+            });
+
+            // Navigation between screens
+            const navButtons = document.querySelectorAll('.nav-btn.primary');
+            navButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const currentScreen = this.closest('.screen-card');
+                    const nextScreen = currentScreen.nextElementSibling?.nextElementSibling;
+
+                    if (nextScreen && nextScreen.classList.contains('screen-card')) {
+                        nextScreen.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    }
+                });
+            });
+
+            // Branch buttons
+            const branchButtons = document.querySelectorAll('.branch-btn');
+            branchButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const kitchenScreen = document.querySelector('.screen-card:nth-child(15)');
+                    if (kitchenScreen) {
+                        kitchenScreen.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    }
+                });
+            });
+
+            // Animate AI assistant card
+            const aiCard = document.querySelector('.ai-assistant-card');
+            if (aiCard) {
+                setTimeout(() => {
+                    aiCard.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        aiCard.style.transform = 'scale(1)';
+                    }, 300);
+                }, 1000);
+            }
+
+            // Animate decision node
+            const decisionNode = document.querySelector('.decision-node');
+            if (decisionNode) {
+                setTimeout(() => {
+                    decisionNode.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        decisionNode.style.transform = 'scale(1)';
+                    }, 500);
+                }, 500);
+            }
+        });
+    </script>
+</body>
+<script>
+    // Function to detect if the device is mobile
+    function isMobileDevice() {
+        return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+    // Check on page load
+    window.onload = function () {
+        if (isMobileDevice()) {
+            alert("هذه الصفحة متاحة فقط على أجهزة الكمبيوتر");
+            document.body.innerHTML = ""; // Clears the page content
+        }
+    };
+</script>
+
+</html>
